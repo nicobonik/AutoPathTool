@@ -221,8 +221,8 @@ public class App extends Application {
         section2.add(new CurvePoint(204, 330, 0.8, 1, 15, 0));
 
         ArrayList<CurvePoint> section3 = new ArrayList<>();
-        section3.add(new CurvePoint(204, 330, 1, 0.3, 15, 0));
-        section3.add(new CurvePoint(184, 69, 1,0.3, 15, 0));
+        section3.add(new CurvePoint(204, 330, 1, 0.3, 15, Math.PI));
+        section3.add(new CurvePoint(184, 69, 1,0.3, 15, Math.PI));
 
         ArrayList<CurvePoint> section4 = new ArrayList<>();
         section4.add(new CurvePoint(155, 89, 1, 1, 15, 0));
@@ -239,15 +239,21 @@ public class App extends Application {
         sections.add(section1);
         sections.add(section2);
         sections.add(section3);
-//        sections.add(section4);
-//        sections.add(section5);
-//        sections.add(section6);
+        sections.add(section4);
+        sections.add(section5);
+        sections.add(section6);
 
         PurePursuit controller = new PurePursuit(sections, 1, false);
 
 //        DifferentialPurePursuit controller = new DifferentialPurePursuit(sections, 1);
 
         controller.graph();
+
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
         new Thread(() -> {
             try {
