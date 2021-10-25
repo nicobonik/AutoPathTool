@@ -20,6 +20,28 @@ public class MathFunctions {
         return angle;
     }
 
+    public static double fullAngleWrap(double angle) {
+        while (angle < 0) {
+            angle += 2.0 * PI;
+        }
+        while(angle >= 2.0 * PI) {
+            angle -= 2.0 * PI;
+        }
+
+        return angle;
+    }
+
+    /**
+     * BOTH ANGLES SHOULD BE IN RANGE [0,2pi]
+     * @param expected
+     * @param measurement
+     * @return
+     */
+    public static double calcAngularError(double expected, double measurement) {
+        double correctedExpectedValue = Math.abs(expected - measurement) > PI ? expected - (Math.signum(expected - measurement) * 2.0 * PI) : expected;
+        return correctedExpectedValue - measurement;
+    }
+
     public static ArrayList<Point> lineCircleIntersect(Point linePoint1, Point linePoint2, double radius, Point circleCenter, boolean minBox, boolean maxBox) {
         ArrayList<Point> intersections = new ArrayList<Point>();
 

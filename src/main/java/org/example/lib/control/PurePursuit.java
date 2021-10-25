@@ -89,9 +89,9 @@ public class PurePursuit extends Controller {
 
                 double closestAngle = Double.MAX_VALUE;
                 for (Point intersection : circleIntersections) {
-                    double angle = Math.atan2(intersection.y - model.model_y, intersection.x - model.model_x);
-                    double relativePointAngle = Math.atan2(end.y - start.y, end.x - start.x);
-                    double deltaAngle = Math.abs(MathFunctions.angleWrap(angle - relativePointAngle));
+                    double angle = MathFunctions.fullAngleWrap(Math.atan2(intersection.y - model.model_y, intersection.x - model.model_x));
+                    double relativePointAngle = MathFunctions.fullAngleWrap(Math.atan2(end.y - start.y, end.x - start.x));
+                    double deltaAngle = Math.abs(MathFunctions.calcAngularError(relativePointAngle, angle));
 
                     if (deltaAngle < closestAngle) {
                         closestAngle = deltaAngle;
@@ -128,9 +128,9 @@ public class PurePursuit extends Controller {
 
                 double closestAngle = Double.MAX_VALUE;
                 for (Point intersection : circleIntersections) {
-                    double angle = Math.atan2(intersection.y - model.model_y, intersection.x - model.model_x);
-                    double relativePointAngle = Math.atan2(end.y - start.y, end.x - start.x);
-                    double deltaAngle = Math.abs(MathFunctions.angleWrap(angle - relativePointAngle));
+                    double angle = MathFunctions.fullAngleWrap(Math.atan2(intersection.y - model.model_y, intersection.x - model.model_x));
+                    double relativePointAngle = MathFunctions.fullAngleWrap(Math.atan2(end.y - start.y, end.x - start.x));
+                    double deltaAngle = Math.abs(MathFunctions.calcAngularError(relativePointAngle, angle));
 
                     if (deltaAngle < closestAngle) {
                         closestAngle = deltaAngle;
