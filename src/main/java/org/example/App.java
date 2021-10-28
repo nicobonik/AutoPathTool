@@ -217,7 +217,7 @@ public class App extends Application {
         section1.add(new CurvePoint(92, 183, 1, 1, 30, 0));
 
         ArrayList<CurvePoint> section2 = new ArrayList<>();
-        section2.add(new CurvePoint(145, 270, 1, 1, 15, 0));
+        section2.add(new CurvePoint(92, 183, 1, 1, 15, 0));
         section2.add(new CurvePoint(204, 330, 0.8, 1, 15, 0));
 
         ArrayList<CurvePoint> section3 = new ArrayList<>();

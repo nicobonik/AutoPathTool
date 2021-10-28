@@ -69,16 +69,9 @@ public class PurePursuit extends Controller {
 
         ArrayList<Point> circleIntersections;
 
-        //make 2 point path compatible with acceleration curve
-        if(path.size() == 2) {
-            CurvePoint placeholder = path.get(0);
-            path.add(0, placeholder);
-        }
-
         for(int i = 0; i < path.size() - 1; i++) {
             CurvePoint start = path.get(i);
             CurvePoint end = path.get(i + 1);
-
 
             if(path.indexOf(end) == path.size() - 1) {
                 if(end.x < start.x) {
@@ -86,73 +79,45 @@ public class PurePursuit extends Controller {
                 }else {
                     circleIntersections = MathFunctions.lineCircleIntersect(start.toPoint(), end.toPoint(), end.lookAhead, new Point(model.model_x, model.model_y), true, false);
                 }
-
-                double closestAngle = Double.MAX_VALUE;
-                for (Point intersection : circleIntersections) {
-                    double angle = MathFunctions.fullAngleWrap(Math.atan2(intersection.y - model.model_y, intersection.x - model.model_x));
-                    double relativePointAngle = MathFunctions.fullAngleWrap(Math.atan2(end.y - start.y, end.x - start.x));
-                    double deltaAngle = Math.abs(MathFunctions.calcAngularError(relativePointAngle, angle));
-
-                    if (deltaAngle < closestAngle) {
-                        closestAngle = deltaAngle;
-                        followPoint.setPathPoint(end);
-                        followPoint.setPoint(intersection);
-//                        return end;
-                    }
-
-                    double maxX = Math.max(start.x, end.x);
-                    double minX = Math.min(start.x, end.x);
-
-
-                    if (followPoint.x > maxX || followPoint.x < minX) {
-                        followPoint.setPoint(end.toPoint());
-//                        System.out.println("wrapping lookahead to end of path");
-//                        System.out.println(followPoint.x + ", " + followPoint.y);
-                    }
-                }
-
-                double slowDownStart = 15;
-                double minSpeed = 0.1;
-                double distanceToTarget = Math.hypot(end.x - model.model_x, end.y - model.model_y);
-                if(distanceToTarget < slowDownStart) {
-                    double m = (1 - minSpeed) / slowDownStart;
-                    followPoint.speed *= m * (distanceToTarget - slowDownStart) + 1;
-                    System.out.println("changing speed");
-                }
-
             } else {
-
                 circleIntersections = MathFunctions.lineCircleIntersect(start.toPoint(), end.toPoint(), end.lookAhead, new Point(model.model_x, model.model_y), false, true);
+            }
 
-//                System.out.println(circleIntersections.size());
+            double closestAngle = Double.MAX_VALUE;
+            for (Point intersection : circleIntersections) {
+                double angle = MathFunctions.fullAngleWrap(Math.atan2(intersection.y - model.model_y, intersection.x - model.model_x));
+                double relativePointAngle = MathFunctions.fullAngleWrap(Math.atan2(end.y - start.y, end.x - start.x));
+                double deltaAngle = Math.abs(MathFunctions.calcAngularError(relativePointAngle, angle));
 
-                double closestAngle = Double.MAX_VALUE;
-                for (Point intersection : circleIntersections) {
-                    double angle = MathFunctions.fullAngleWrap(Math.atan2(intersection.y - model.model_y, intersection.x - model.model_x));
-                    double relativePointAngle = MathFunctions.fullAngleWrap(Math.atan2(end.y - start.y, end.x - start.x));
-                    double deltaAngle = Math.abs(MathFunctions.calcAngularError(relativePointAngle, angle));
-
-                    if (deltaAngle < closestAngle) {
-                        closestAngle = deltaAngle;
-                        followPoint.setPathPoint(end);
-                        followPoint.setPoint(intersection);
-                    }
+                if (deltaAngle < closestAngle) {
+                    closestAngle = deltaAngle;
+                    followPoint.setPathPoint(end);
+                    followPoint.setPoint(intersection);
                 }
 
-//                System.out.println("hello world??");
-                if(path.indexOf(start) == 0) {
-                    double slowDownStart = 15;
-                    double minSpeed = 0.1;
-                    double distanceToTarget = Math.hypot(start.x - model.model_x, start.y - model.model_y);
-//                    System.out.println(distanceToTarget);
-                    if (distanceToTarget < slowDownStart) {
-                        double m = (1 - minSpeed) / slowDownStart;
-                        followPoint.speed *= m * (distanceToTarget - slowDownStart) + 1;
-//                        System.out.println("changing speed " + currentSection);
-//                        System.out.println(followPoint.x + ", " + followPoint.y);
-                    }
+                //check to see if followPoint extends beyond end of path, and wrap followPoint to end of path.
+                double maxX = Math.max(start.x, end.x);
+                double minX = Math.min(start.x, end.x);
+                if (followPoint.x > maxX || followPoint.x < minX) {
+                    followPoint.setPoint(end.toPoint());
                 }
             }
+        }
+
+        //accel curves
+        CurvePoint pathStart = path.get(0);
+        CurvePoint pathEnd = path.get(path.size() - 1);
+
+        double accelCoeff = 15;
+        double minSpeed = 0.1;
+        double m = (1 - minSpeed) / accelCoeff;
+
+        double distanceFromStart = Math.hypot(model.model_x - pathStart.x, model.model_y - pathStart.y);
+        double distanceFromEnd = Math.hypot(model.model_x - pathEnd.x, model.model_y - pathEnd.y);
+        if(distanceFromEnd < accelCoeff) {
+            followPoint.speed *= (m * (distanceFromEnd - accelCoeff)) + 1;
+        } else if(distanceFromStart < accelCoeff) {
+            followPoint.speed *= (m * (distanceFromStart - accelCoeff)) + 1;
         }
 
         return followPoint;
